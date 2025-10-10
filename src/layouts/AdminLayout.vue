@@ -2,7 +2,7 @@
   <div class="admin-layout">
     <!-- 左侧导航栏 -->
     <aside class="sidebar">
-      <h2 class="logo">STY 后台系统</h2>
+      <h2 class="logo">后台系统</h2>
       <nav>
 
 
@@ -11,7 +11,8 @@
         <router-link to="/financial" class="nav-item" active-class="active">💰 理财管理</router-link>
         <router-link to="/withdrawal" class="nav-item" active-class="active">💸 提现管理</router-link>
         <router-link to="/products" class="nav-item" active-class="active">🛒 产品管理</router-link>
-        <router-link to="/notify" class="nav-item" active-class="active">🔔 通知中心</router-link>
+        <router-link to="/InterestControl" class="nav-item" active-class="active">📈 利率控制</router-link>
+         <router-link to="/notify" class="nav-item" active-class="active">🔔 通知中心</router-link>
       </nav>
       <div class="logout">
         <el-button type="danger" size="small" @click="logout">退出登录</el-button>

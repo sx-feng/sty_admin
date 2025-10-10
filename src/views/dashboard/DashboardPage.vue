@@ -13,7 +13,7 @@
         <span class="value">{{ stats.financeTotal.toLocaleString() }} USDT</span>
       </div>
       <div class="card">
-        <span class="label">📥 待处理提现</span>
+        <span class="label">📥 待处理提现数</span>
         <span class="value">{{ stats.withdrawPending }}</span>
       </div>
     </div>
@@ -80,9 +80,10 @@ async function loadDashboardData() {
     const withdrawList = Array.isArray(withdrawRes.data)
       ? withdrawRes.data
       : withdrawRes.data?.records || withdrawRes.data?.data || []
-    stats.value.withdrawPending = withdrawList.filter(
-      (x) => x.status === 0 || x.status === "PENDING"
-    ).length
+   stats.value.withdrawPending = withdrawList.filter(
+  (x) => x.status === 1 || x.status === "PROCESSING"
+).length
+
     initWithdrawChart(withdrawList)
   } catch (e) {
     console.error("仪表盘数据加载失败:", e)

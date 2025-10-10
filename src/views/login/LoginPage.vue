@@ -1,7 +1,7 @@
 <template>
   <div class="login-page">
     <div class="login-card">
-      <h2 class="title">STY 后台管理系统</h2>
+      <h2 class="title">后台管理系统</h2>
 
       <!-- 用户名输入 -->
       <div class="form-item">
