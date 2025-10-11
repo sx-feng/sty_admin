@@ -5,8 +5,9 @@
       <h2>🛒 用户理财产品管理</h2>
       <div class="actions">
         <el-select v-model="filterType" placeholder="筛选状态" @change="getProductList" size="small">
-          <el-option label="未到期产品" value="unexpired" />
-          <el-option label="已到期产品" value="expired" />
+          <el-option label="全部产品" value="all" />
+          <el-option label="未到期产品" value="0" />
+          <el-option label="已到期产品" value="1" />
         </el-select>
         <el-button type="primary" size="small" @click="getProductList" :loading="loading">刷新</el-button>
       </div>
@@ -14,16 +15,16 @@
 
     <!-- 产品列表 -->
     <el-table :data="tableData" border style="width: 100%" v-loading="loading">
-      <el-table-column type="index" label="#"  />
+      <el-table-column type="index" label="#" width="60" />
       <el-table-column prop="userName" label="用户名" />
       <el-table-column prop="productName" label="产品名称" />
-      <el-table-column prop="amount" label="金额 (USDT)"  />
-      <el-table-column prop="interestRate" label="利率" />
-      <el-table-column prop="cycleType" label="周期 (s-秒,m-分钟,h-小时)" />
+      <el-table-column prop="amount" label="金额 (USDT)" />
+      <el-table-column prop="interestRate" label="利率 (%)" />
+      <el-table-column prop="cycleType" label="周期类型 (s/m/h)" />
       <el-table-column prop="cycleValue" label="周期值" />
-      <el-table-column prop="status" label="状态">
+      <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
-          <el-tag :type="row.status === 0 ? 'success' : 'error'">
+          <el-tag :type="row.status === 0 ? 'success' : 'danger'">
             {{ row.status === 0 ? '进行中' : '已到期' }}
           </el-tag>
         </template>
@@ -57,22 +58,23 @@
         <el-form-item label="产品名称">
           <el-input v-model="editForm.productName" disabled />
         </el-form-item>
-        <el-form-item label="利率/0.00">
+        <el-form-item label="利率 (%)">
           <el-input-number v-model="editForm.interestRate" :min="0" :max="100" />
         </el-form-item>
-        <el-form-item  label="周期" >
-          <el-input placeholder=" (s-秒,m-分钟,h-小时)" v-model="editForm.cycleType"/>
+        <el-form-item label="周期类型">
+          <el-input v-model="editForm.cycleType" placeholder="s/m/h" />
         </el-form-item>
         <el-form-item label="周期值">
           <el-input-number v-model="editForm.cycleValue" :min="1" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editForm.status" placeholder="选择状态">
-            <el-option label="进行中" value="active" />
-            <el-option label="已到期" value="expired" />
+            <el-option label="进行中" :value="0" />
+            <el-option label="已到期" :value="1" />
           </el-select>
         </el-form-item>
       </el-form>
+
       <template #footer>
         <el-button @click="editDialogVisible = false">取消</el-button>
         <el-button type="primary" @click="saveProductInfo">保存</el-button>
@@ -86,13 +88,13 @@ import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { request } from '@/api/request'
 
-// 表格数据
+// 数据与状态
 const tableData = ref([])
 const total = ref(0)
 const pageSize = 10
 const currentPage = ref(1)
 const loading = ref(false)
-const filterType = ref('unexpired')
+const filterType = ref('all') // 默认显示全部产品
 
 // 编辑弹窗
 const editDialogVisible = ref(false)
@@ -101,13 +103,23 @@ const editForm = ref({})
 // ===== 获取产品列表 =====
 async function getProductList() {
   loading.value = true
+  let url = ''
 
-  const res = await request(0, "/api/admin/product/find/all", { page: currentPage.value, size: pageSize })
+  // 根据筛选类型选择接口
+  if (filterType.value === 'all') {
+    url = '/api/admin/product/find/all'
+  } else {
+    url = `/api/admin/product/find/status/${filterType.value}`
+  }
+
+  const res = await request(0, url, { page: currentPage.value, size: pageSize })
   loading.value = false
+
   if (!res.ok) return ElMessage.error(res.message || '加载失败')
-  tableData.value = res.data|| []
-  total.value = res.data.total || 0
-  console.log(res.data,"product")
+
+  // 如果后端分页格式为 {records, total}
+  tableData.value = res.data?.records || res.data || []
+  total.value = res.data?.total || 0
 }
 
 // ===== 编辑产品 =====
@@ -144,7 +156,7 @@ function deleteProduct(row) {
   })
 }
 
-// ===== 分页切换 =====
+// ===== 分页 =====
 function handlePageChange(page) {
   currentPage.value = page
   getProductList()

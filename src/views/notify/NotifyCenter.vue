@@ -278,7 +278,7 @@ onBeforeUnmount(() => {
 /* 每一项样式 */
 :deep(.el-select-dropdown__item) {
   color: #fff !important;
-}
+}             
 
 :deep(.el-select-dropdown__item.is-hovering) {
   background-color: #333 !important;
