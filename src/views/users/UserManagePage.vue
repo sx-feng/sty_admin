@@ -144,10 +144,12 @@ async function submitAmount() {
     amountForm.value.type === 'recharge'
       ? '/api/admin/user/recharge'
       : '/api/admin/user/reduceBalance'
-  const res = await request(1, api, {
+
+  const payload = {
     user: amountForm.value.user,
     amount: amountForm.value.amount,
-  })
+  }
+  const res = await request(1, api, payload)
   if (res.ok) {
     ElMessage.success(`${dialogTitle.value}成功`)
     amountDialogVisible.value = false
