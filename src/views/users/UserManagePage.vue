@@ -129,13 +129,13 @@ async function saveUserInfo() {
 // ===== 充值 / 扣款 =====
 function openRechargeDialog(row) {
   dialogTitle.value = '充值'
-  amountForm.value = { user: row.user, amount: 0, type: 'recharge' }
+  amountForm.value = { user: row.userName, amount: 0, type: 'recharge' }
   amountDialogVisible.value = true
 }
 
 function openReduceDialog(row) {
   dialogTitle.value = '扣款'
-  amountForm.value = { user: row.user, amount: 0, type: 'reduce' }
+  amountForm.value = { user: row.userName, amount: 0, type: 'reduce' }
   amountDialogVisible.value = true
 }
 

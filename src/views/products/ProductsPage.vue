@@ -19,11 +19,12 @@
       <el-table-column prop="productName" label="产品名称" />
       <el-table-column prop="amount" label="金额 (USDT)"  />
       <el-table-column prop="interestRate" label="利率" />
-      <el-table-column prop="cycleDays" label="周期 (天)" />
+      <el-table-column prop="cycleType" label="周期 (s-秒,m-分钟,h-小时)" />
+      <el-table-column prop="cycleValue" label="周期值" />
       <el-table-column prop="status" label="状态">
         <template #default="{ row }">
-          <el-tag :type="row.status === 'active' ? 'success' : 'info'">
-            {{ row.status === 'active' ? '进行中' : '已到期' }}
+          <el-tag :type="row.status === 0 ? 'success' : 'error'">
+            {{ row.status === 0 ? '进行中' : '已到期' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -51,16 +52,19 @@
     <el-dialog v-model="editDialogVisible" title="编辑产品信息" width="450px">
       <el-form :model="editForm" label-width="90px">
         <el-form-item label="用户名">
-          <el-input v-model="editForm.user" disabled />
+          <el-input v-model="editForm.userName" disabled />
         </el-form-item>
         <el-form-item label="产品名称">
           <el-input v-model="editForm.productName" disabled />
         </el-form-item>
-        <el-form-item label="利率 (%)">
+        <el-form-item label="利率/0.00">
           <el-input-number v-model="editForm.interestRate" :min="0" :max="100" />
         </el-form-item>
-        <el-form-item label="周期 (天)">
-          <el-input-number v-model="editForm.cycleDays" :min="1" />
+        <el-form-item  label="周期" >
+          <el-input placeholder=" (s-秒,m-分钟,h-小时)" v-model="editForm.cycleType"/>
+        </el-form-item>
+        <el-form-item label="周期值">
+          <el-input-number v-model="editForm.cycleValue" :min="1" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editForm.status" placeholder="选择状态">
@@ -97,11 +101,8 @@ const editForm = ref({})
 // ===== 获取产品列表 =====
 async function getProductList() {
   loading.value = true
-  const api =
-    filterType.value === 'expired'
-      ? '/api/admin/product/expired'
-      : '/api/admin/product/unexpired'
-  const res = await request(0, api, { page: currentPage.value, size: pageSize })
+
+  const res = await request(0, "/api/admin/product/find/all", { page: currentPage.value, size: pageSize })
   loading.value = false
   if (!res.ok) return ElMessage.error(res.message || '加载失败')
   tableData.value = res.data|| []

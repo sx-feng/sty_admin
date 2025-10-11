@@ -37,7 +37,7 @@
           <el-button
             size="small"
             type="success"
-            :disabled="row.status !== 'pending'"
+            :disabled="row.status !== 1"
             @click="approveWithdrawal(row)"
           >
             通过
@@ -45,7 +45,7 @@
           <el-button
             size="small"
             type="danger"
-            :disabled="row.status !== 'pending'"
+            :disabled="row.status !== 1"
             @click="rejectWithdrawal(row)"
           >
             拒绝
@@ -102,14 +102,14 @@ async function getWithdrawalList() {
 
 // === 审核通过 ===
 function approveWithdrawal(row) {
-  ElMessageBox.confirm(`确定通过【${row.user}】的提现申请吗？`, '确认审核', {
+  ElMessageBox.confirm(`确定通过【${row.userName}】的提现申请吗？`, '确认审核', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'success'
   }).then(async () => {
-    const res = await request(1, '/api/admin/withdrawal/update', {
+    const res = await request(1, '/api/admin/withdrawal/updateById', {
       id: row.id,
-      status: 'approved'
+      status: 0
     })
     if (res.ok) {
       ElMessage.success('审核通过')
@@ -122,14 +122,14 @@ function approveWithdrawal(row) {
 
 // === 审核拒绝 ===
 function rejectWithdrawal(row) {
-  ElMessageBox.confirm(`确定拒绝【${row.user}】的提现申请吗？`, '确认拒绝', {
+  ElMessageBox.confirm(`确定拒绝【${row.userName}】的提现申请吗？`, '确认拒绝', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async () => {
-    const res = await request(1, '/api/admin/withdrawal/update', {
+    const res = await request(1, '/api/admin/withdrawal/updateById', {
       id: row.id,
-      status: 'rejected'
+      status: 2
     })
     if (res.ok) {
       ElMessage.success('已拒绝')
@@ -158,9 +158,9 @@ function getStatusTagType(status) {
 
 function getStatusText(status) {
   switch (status) {
-    case 0: return '待处理';
-    case 1: return '已通过';
-    case -1: return '失败';
+    case 0: return '已通过';
+    case 1: return '待处理';
+    case 2: return '失败/提现拒绝';
     default: return '未知';
   }
 }
