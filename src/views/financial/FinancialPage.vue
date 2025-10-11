@@ -31,8 +31,8 @@
       <el-table-column prop="interestRate" label="收益率 (%)" />
       <el-table-column prop="status" label="状态">
         <template #default="{ row }">
-          <el-tag :type="row.status === 'active' ? 'success' : 'info'">
-            {{ row.status === 'active' ? '进行中' : '已结束' }}
+          <el-tag :type="row.status === 0 ? 'success' : 'error'">
+            {{ row.status === 0 ? '进行中' : '已结束' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -61,15 +61,15 @@
     <el-dialog v-model="editDialogVisible" title="编辑理财记录" width="450px">
       <el-form :model="editForm" label-width="90px">
         <el-form-item label="用户名">
-          <el-input v-model="editForm.user" disabled />
+          <el-input v-model="editForm.userName" disabled />
         </el-form-item>
         <el-form-item label="收益率 (%)">
           <el-input-number v-model="editForm.rate" :min="0" :max="100" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editForm.status" placeholder="选择状态">
-            <el-option label="进行中" value="active" />
-            <el-option label="已结束" value="finished" />
+            <el-option label="进行中" value="0" />
+            <el-option label="已结束" value="1" />
           </el-select>
         </el-form-item>
       </el-form>
