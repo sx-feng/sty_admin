@@ -2,9 +2,16 @@
   <div class="notify-center-page">
     <!-- 页面标题 -->
     <div class="page-header">
-      <h2>🔔 实时通知中心</h2>
+      <div class="title">
+        <h2>🔔 实时通知中心</h2>
+        <span class="status" :class="{ online: connected }">
+          {{ connected ? '🟢 已连接' : '🔴 已断开' }}
+        </span>
+      </div>
+
       <div class="actions">
-        <el-select v-model="filterType" placeholder="筛选事件类型" size="small" clearable>
+        <el-select v-model="filterType" placeholder="筛选事件类型" size="small" clearable  :teleported="false"
+>
           <el-option label="全部" value="" />
           <el-option label="充值" value="USER_RECHARGE" />
           <el-option label="提现" value="USER_WITHDRAWAL" />
@@ -38,6 +45,9 @@ const logs = ref([])
 const filterType = ref('')
 const logBox = ref(null)
 let ws = null
+let reconnectTimer = null
+let destroyed = false
+const connected = ref(false)
 
 // === 过滤显示 ===
 const filteredLogs = computed(() => {
@@ -56,56 +66,89 @@ function eventName(type) {
   }
 }
 
-// === WebSocket 实时接收 ===
+// === 初始化 WebSocket ===
 function initWebSocket() {
   try {
-   const wsUrl = location.protocol === 'https:'
-  ? 'wss://yourdomain.com/ws/admin/notify'
-  : 'ws://192.168.110.101:8065/ws/admin/notify'
-
-ws = new WebSocket(wsUrl)
+    const wsUrl = 'ws://192.168.110.101:8065/ws/admin/notify'
+    ws = new WebSocket(wsUrl)
 
     ws.onopen = () => {
+      connected.value = true
       console.log('✅ 通知中心已连接')
       ElMessage.success('WebSocket 已连接')
     }
+
     ws.onmessage = (event) => {
+      if (destroyed) return
       try {
         const msg = JSON.parse(event.data)
+        console.log('📩 收到消息:', msg)
         handleEvent(msg)
       } catch (e) {
-        console.warn('消息解析失败:', e)
+        console.warn('消息解析失败:', e, event.data)
       }
     }
-    ws.onclose = () => console.log('🔌 WebSocket 已断开')
-    ws.onerror = (err) => console.error('WebSocket 错误:', err)
+
+    ws.onerror = (err) => {
+      console.error('WebSocket 错误:', err)
+      connected.value = false
+    }
+
+    ws.onclose = () => {
+      connected.value = false
+      console.warn('🔌 WebSocket 已断开')
+      scheduleReconnect()
+    }
   } catch (e) {
     console.error('WebSocket 初始化失败:', e)
+    connected.value = false
+    scheduleReconnect()
   }
+}
+
+// === 自动重连 ===
+function scheduleReconnect() {
+  if (reconnectTimer) return
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null
+    if (!destroyed) initWebSocket()
+  }, 3000)
 }
 
 // === 处理消息 ===
 function handleEvent(msg) {
   const time = new Date().toLocaleString()
-  const type = msg.event
-  let content = ''
 
+  const rawEvent = msg.event || msg.type || ''
+  let type = rawEvent.toUpperCase()
+
+  // 支持中文事件名
+  if (rawEvent === '充值') type = 'USER_RECHARGE'
+  if (rawEvent === '提现') type = 'USER_WITHDRAWAL'
+  if (rawEvent === '下单') type = 'USER_PURCHASE'
+
+  // ✅ 兼容没有 data 的结构
+  const data = msg.data || msg
+  const user = data.user || '未知用户'
+  const amount = data.amount || 0
+  const product = data.productName || '未知产品'
+
+  let content = ''
   switch (type) {
     case 'USER_RECHARGE':
-      content = `用户 ${msg.data.user} 充值 ${msg.data.amount} USDT`
+      content = `用户 ${user} 充值 ${amount} USDT`
       break
     case 'USER_WITHDRAWAL':
-      content = `用户 ${msg.data.user} 提现 ${msg.data.amount} USDT`
+      content = `用户 ${user} 提现 ${amount} USDT`
       break
     case 'USER_PURCHASE':
-      content = `用户 ${msg.data.user} 购买产品 ${msg.data.productName}`
+      content = `用户 ${user} 购买了 ${product}（金额：${amount} USDT）`
       break
     default:
-      content = JSON.stringify(msg.data)
+      content = JSON.stringify(data)
   }
 
-  const log = { type, time, content }
-  logs.value.unshift(log)
+  logs.value.unshift({ type, time, content })
   playVoice(type)
 
   nextTick(() => {
@@ -133,8 +176,24 @@ function clearLogs() {
 }
 
 // === 生命周期 ===
-onMounted(() => initWebSocket())
-onBeforeUnmount(() => ws && ws.close())
+onMounted(() => {
+  destroyed = false
+  initWebSocket()
+})
+onBeforeUnmount(() => {
+  destroyed = true
+  if (ws) {
+    // eslint-disable-next-line no-empty
+    try { ws.close() } catch {
+      
+    }
+    ws = null
+  }
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer)
+    reconnectTimer = null
+  }
+})
 </script>
 
 <style scoped>
@@ -149,6 +208,18 @@ onBeforeUnmount(() => ws && ws.close())
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+}
+.title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.status {
+  font-size: 13px;
+  color: #ccc;
+}
+.status.online {
+  color: #67c23a;
 }
 .actions {
   display: flex;
@@ -184,4 +255,38 @@ onBeforeUnmount(() => ws && ws.close())
   margin-left: 10px;
   margin-top: 2px;
 }
+/* --- 修复下拉菜单和选中项字体颜色 --- */
+:deep(.el-select),
+:deep(.el-select__wrapper),
+:deep(.el-input__inner) {
+  color: #fff !important;
+  background-color: #222 !important;
+  border-color: #333 !important;
+}
+
+/* 占位符颜色 */
+:deep(.el-select__placeholder) {
+  color: #aaa !important;
+}
+
+/* 下拉面板样式 */
+:deep(.el-select-dropdown) {
+  background-color: #222 !important;
+  border: 1px solid #333 !important;
+}
+
+/* 每一项样式 */
+:deep(.el-select-dropdown__item) {
+  color: #fff !important;
+}
+
+:deep(.el-select-dropdown__item.is-hovering) {
+  background-color: #333 !important;
+}
+
+:deep(.el-select-dropdown__item.is-selected) {
+  color: #ffd04b !important; /* 选中为金色 */
+  font-weight: bold;
+}
+
 </style>
