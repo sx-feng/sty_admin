@@ -16,7 +16,9 @@ const routes = [
       { path: 'withdrawal', component: () => import('@/views/withdrawal/WithdrawalManage.vue') },
        { path: 'notify', component: () => import('@/views/notify/NotifyCenter.vue') },
      { path: 'products', component: () => import('@/views/products/ProductsPage.vue') },
-      { path: 'InterestControl', component: () => import('@/views/InterestControl/InterestControl.vue') }
+      { path: 'InterestControl', component: () => import('@/views/InterestControl/InterestControl.vue') },
+          
+             { path: 'SystemSettings', component: () => import('@/views/SystemSettings/SystemSettings.vue') }
 
 
     ]

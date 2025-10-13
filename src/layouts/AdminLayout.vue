@@ -13,6 +13,8 @@
         <router-link to="/products" class="nav-item" active-class="active">🛒 产品管理</router-link>
         <router-link to="/InterestControl" class="nav-item" active-class="active">📈 利率控制</router-link>
          <router-link to="/notify" class="nav-item" active-class="active">🔔 通知中心</router-link>
+         <router-link to="/SystemSettings" class="nav-item" active-class="active">⚙️系统设置</router-link>
+
       </nav>
       <div class="logout">
         <el-button type="danger" size="small" @click="logout">退出登录</el-button>
