@@ -87,12 +87,13 @@ const handleSubmit = async () => {
 const handleDelete = async (id) => {
   const ok = await ElMessageBox.confirm('确定要删除这条利率配置吗？', '提示', { type: 'warning' })
   if (ok) {
-    const res = await fetch(`/api/admin/InterestRateConfig/delete/${id}`, { method: 'DELETE' })
+    // const res = await fetch(`/api/admin/InterestRateConfig/delete/${id}`, { method: 'DELETE' })
+     const res = await request(1,`/api/admin/InterestRateConfig/delete/${id}`, form.value) // POST
     console.log(res,"detele")
-    const json = await res.json()
-    if (json?.code === 200) {
+    // const json = await res.json()
+    // if (json?.code === 200) {
       await loadData()
-    }
+    // }
   }
 }
 const searchName = ref('')

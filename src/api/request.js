@@ -1,6 +1,6 @@
 // request.js
 // const baseURL = 'http://103.236.74.15:8088/';
-const baseURL = 'http://192.168.110.101:8065';
+const baseURL = 'http://192.168.110.101:8056';
 
 /**
  * 通用请求方法（强化版）
