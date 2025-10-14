@@ -171,8 +171,9 @@ const savingFinancial = ref(false)
 async function loadFinancial() {
   try {
     const res = await getFinancialRate()
-    if (res.data.code === 200) {
-      form.value.interest_rate = parseFloat(res.data.data.rate || 0)
+    if (res.code === 200) {
+      form.value.interest_rate = parseFloat(res.data.rate || 0)
+      ElMessage.success('加载金融成功')
     }
   } catch {
     ElMessage.error('加载金融配置失败')
@@ -204,8 +205,8 @@ async function loadAnnouncement() {
   try {
     const res = await getAnnouncement()
     if (res.code === 200) {
-      announcement.value = res.data.data.announcement || ''
-
+      announcement.value = res.data.announcement || ''
+ElMessage.success('公告已刷新')
     }
   } catch {
     ElMessage.error('加载公告失败')

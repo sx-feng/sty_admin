@@ -69,7 +69,7 @@ function eventName(type) {
 // === 初始化 WebSocket ===
 function initWebSocket() {
   try {
-    const wsUrl = 'ws://192.168.110.101:8065/ws/admin/notify'
+    const wsUrl = 'ws://192.168.110.101:8056/ws/admin/notify'
     ws = new WebSocket(wsUrl)
 
     ws.onopen = () => {
