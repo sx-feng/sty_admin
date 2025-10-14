@@ -44,9 +44,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount,getCurrentInstance } from 'vue'
 import { ElMessage } from 'element-plus'
-
+const { appContext } = getCurrentInstance()
+const wsUrl = appContext.config.globalProperties.$config.wsUrl
 /**
  * 可调参数
  * - wsUrl：后端 WebSocket 地址
@@ -54,10 +55,10 @@ import { ElMessage } from 'element-plus'
  */
 // eslint-disable-next-line no-undef
 const props = defineProps({
-  wsUrl: {
-    type: String,
-    default: 'ws://192.168.110.101:8065/ws/admin/notify',
-  },
+  // wsUrl: {
+  //   type: String,
+  //   default: 'ws://192.168.110.101:8056/ws/admin/notify',
+  // },
   autoConnect: {
     type: Boolean,
     default: true,
@@ -92,7 +93,7 @@ const beepSrc =
 
 function connect() {
   try {
-    ws = new WebSocket(props.wsUrl)
+    ws = new WebSocket(wsUrl)
   } catch (e) {
     console.error('WS 创建失败：', e)
     scheduleReconnect()

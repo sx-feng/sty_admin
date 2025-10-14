@@ -26,6 +26,10 @@
       <header class="topbar">
         <span class="topbar_to"><el-switch :active-text="'暗色'" :inactive-text="'浅色'" :model-value="theme === 'dark'"
             @change="toggle()" /></span>
+              <span class="status-text" :class="{ online: connected }">
+              {{ connected ? '🟢 已连接' : '🔴 已断开' }}
+              </span> &nbsp;&nbsp;&nbsp;
+
         <span>欢迎回来，管理员！</span>
         <NotifyBell />
       </header>
@@ -38,13 +42,51 @@
 </template>
 
 <script setup>
+import { ref, onMounted, getCurrentInstance } from 'vue'
 import { useTheme } from '@/utils/useTheme'
 const { theme, toggle } = useTheme()
 import NotifyBell from '@/components/NotifyBell.vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-
 const router = useRouter()
+// ✅ 取全局 WebSocket 地址
+const { appContext } = getCurrentInstance()
+const wsUrl = appContext.config.globalProperties.$config.wsUrl
+
+// ✅ 新增连接状态变量
+const connected = ref(false)
+let ws = null
+let reconnectTimer = null
+
+function initWebSocket() {
+  try {
+    ws = new WebSocket(wsUrl)
+    ws.onopen = () => { connected.value = true }
+    ws.onclose = () => {
+      connected.value = false
+      scheduleReconnect()
+    }
+    ws.onerror = () => {
+      connected.value = false
+    }
+  } catch (e) {
+    connected.value = false
+    scheduleReconnect()
+  }
+}
+
+function scheduleReconnect() {
+  if (reconnectTimer) return
+  reconnectTimer = setTimeout(() => {
+    reconnectTimer = null
+    initWebSocket()
+  }, 3000)
+}
+onMounted(() => {
+  initWebSocket()
+})
+
+
 
 function logout() {
   localStorage.removeItem('admin-token')
@@ -130,4 +172,18 @@ nav {
   overflow-y: auto;
   padding: 20px;
 }
+.status-text {
+  font-size: 13px;
+  color: #ff5f5f; /* 默认红色 */
+  transition: color 0.3s;
+}
+.status-text.online {
+  color: #67c23a; /* 绿色 */
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 </style>

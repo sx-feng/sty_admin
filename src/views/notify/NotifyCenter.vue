@@ -38,8 +38,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick,getCurrentInstance } from 'vue'
 import { ElMessage } from 'element-plus'
+
+const { appContext } = getCurrentInstance()
+const wsUrl = appContext.config.globalProperties.$config.wsUrl
 
 const logs = ref([])
 const filterType = ref('')
@@ -69,13 +72,12 @@ function eventName(type) {
 // === 初始化 WebSocket ===
 function initWebSocket() {
   try {
-    const wsUrl = 'ws://192.168.110.101:8056/ws/admin/notify'
-    ws = new WebSocket(wsUrl)
 
+    ws = new WebSocket(wsUrl)
     ws.onopen = () => {
       connected.value = true
       console.log('✅ 通知中心已连接')
-      ElMessage.success('WebSocket 已连接')
+      
     }
 
     ws.onmessage = (event) => {
