@@ -103,30 +103,30 @@ function logout() {
   align-items: center;
   gap: 6px; /* 让文字和开关有点间距 */
   font-size: 14px;
-  color: #ccc;
+  color: var(--text-2);
 }
 
 .admin-layout {
   display: flex;
   height: 100vh;
-  background-color: #121212;
-  color: #f5f5f5;
+  background-color: var(--bg-body);
+  color: var(--text-1);
 }
 
 .sidebar {
   width: 200px;
-  background: #1b1b1b;
+  background: var(--bg-panel);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  border-right: 1px solid #333;
+  border-right: 1px solid var(--border);
 }
 
 .logo {
   text-align: center;
   padding: 15px;
   font-size: 18px;
-  color: gold;
+  color: var(--brand);
 }
 
 nav {
@@ -135,16 +135,16 @@ nav {
 }
 
 .nav-item {
-  color: #ddd;
+  color: var(--text-1);
   padding: 10px 15px;
   text-decoration: none;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
 .nav-item:hover,
 .nav-item.active {
-  background: #2a2a2a;
-  color: gold;
+  background: var(--bg-panel-2);
+  color: var(--brand);
 }
 
 .logout {
@@ -160,8 +160,8 @@ nav {
 
 .topbar {
   height: 50px;
-  background: #181818;
-  border-bottom: 1px solid #333;
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -179,7 +179,7 @@ nav {
   transition: color 0.3s;
 }
 .status-text.online {
-  color: #67c23a; /* 绿色 */
+  color: var(--success); /* 绿色 */
 }
 .topbar-right {
   display: flex;

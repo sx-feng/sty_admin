@@ -7,18 +7,30 @@
 
   --el-bg-color: var(--bg-panel);
   --el-bg-color-page: var(--bg-body);
+  --el-bg-color-overlay: var(--bg-panel-2);
+  --el-fill-color-blank: var(--bg-panel);
   --el-text-color-primary: var(--text-1);
   --el-text-color-regular: var(--text-2);
+  --el-text-color-secondary: var(--text-2);
+  --el-text-color-disabled: var(--muted);
   --el-border-color: var(--border);
+  --el-border-color-lighter: var(--border);
+  --el-border-color-darker: var(--border);
 }
 
 :root[data-theme="light"]{
   --el-color-primary: var(--brand);
   --el-bg-color: var(--bg-panel);
   --el-bg-color-page: var(--bg-body);
+  --el-bg-color-overlay: var(--bg-panel-2);
+  --el-fill-color-blank: var(--bg-panel);
   --el-text-color-primary: var(--text-1);
   --el-text-color-regular: var(--text-2);
+  --el-text-color-secondary: var(--text-2);
+  --el-text-color-disabled: var(--muted);
   --el-border-color: var(--border);
+  --el-border-color-lighter: var(--border);
+  --el-border-color-darker: var(--border);
 }
 
 /* 表格/菜单/对话框的深色适配优化 */
@@ -30,4 +42,26 @@
 .el-menu--vertical{ border-right:1px solid var(--border); }
 .el-button.is-plain.el-button--primary{
   color:#000; background: var(--brand); border-color: var(--brand);
+}
+
+/* 表格 hover 在暗色偏亮时增强可读性 */
+.el-table__body tr:hover>td,
+.el-table__body tr.hover-row>td{
+  background-color: var(--table-hover) !important;
+  color: var(--text-1) !important;
+}
+
+/* 表单控件基色与边框 */
+.el-card,
+.el-input__wrapper,
+.el-select .el-input__wrapper,
+.el-textarea__inner{
+  background-color: var(--bg-panel) !important;
+  color: var(--text-1) !important;
+  border-color: var(--border) !important;
+}
+
+/* 弹层类背景更暗一阶，提升层级感 */
+.el-dialog, .el-message-box, .el-dropdown__popper, .el-picker__popper{
+  background-color: var(--bg-panel-2) !important;
 }

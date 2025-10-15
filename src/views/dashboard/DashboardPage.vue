@@ -151,8 +151,8 @@ onMounted(() => {
 .dashboard-page {
   padding: 30px;
   min-height: 100vh;
-  background: #000;
-  color: #ffd700;
+  background: var(--bg-body);
+  color: var(--brand);
   font-family: "Microsoft YaHei", sans-serif;
 }
 
@@ -174,13 +174,13 @@ onMounted(() => {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px 24px;
   text-align: center;
   width: 180px;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.1);
+  box-shadow: var(--glow);
   transition: transform 0.2s;
 }
 .card:hover {
@@ -189,13 +189,13 @@ onMounted(() => {
 .label {
   display: block;
   font-size: 14px;
-  color: #c5b37a;
+  color: var(--text-2);
   margin-bottom: 4px;
 }
 .value {
   font-size: 22px;
   font-weight: 700;
-  color: #ffd700;
+  color: var(--brand);
 }
 
 /* 图表区域 */
@@ -208,11 +208,11 @@ onMounted(() => {
 .chart-box {
   width: 480px;
   max-width: 95%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 16px;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.08);
+  box-shadow: var(--glow);
 }
 .chart-box h3 {
   font-size: 16px;
@@ -223,3 +223,4 @@ onMounted(() => {
   height: 300px;
 }
 </style>
+

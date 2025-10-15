@@ -19,7 +19,13 @@
       <el-table-column prop="bankName" label="银行名称" />
       <el-table-column prop="bankBranch" label="开户行" />
       <el-table-column prop="bankCard" label="银行卡号" />
-      <el-table-column prop="ifOut" label="理财权限" />
+      <el-table-column prop="ifOut" label="理财权限" width="120">
+        <template #default="{ row }">
+          <el-tag :type="isPermitted(row.ifOut) ? 'success' : 'info'">
+            {{ isPermitted(row.ifOut) ? '有权限' : '无权限' }}
+          </el-tag>
+        </template>
+      </el-table-column>
        <el-table-column prop="balance" label="余额" />
       <el-table-column prop="creditScore" label="信用分" />
 
@@ -97,6 +103,16 @@
           <el-input-number v-model="editForm.creditScore" :min="0" />
         </el-form-item>
 
+        <el-form-item label="理财权限">
+          <el-switch
+            v-model="editForm.ifOut"
+            :active-value="ifOutTrue"
+            :inactive-value="ifOutFalse"
+            active-text="有权限"
+            inactive-text="无权限"
+          />
+        </el-form-item>
+
         <el-form-item label="是否冻结">
           <el-switch
             v-model="editForm.isFrozen"
@@ -139,7 +155,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { request } from '@/api/request'
 
@@ -156,6 +172,17 @@ const amountDialogVisible = ref(false)
 const dialogTitle = ref('')
 const editForm = ref({})
 const amountForm = ref({})
+
+// 理财权限工具：显示映射与 Switch 值类型保持
+const isPermitted = (v) => v === true || v === 1 || v === '1' || v === 'true'
+const ifOutTrue = computed(() => {
+  const v = editForm.value?.ifOut
+  return typeof v === 'number' ? 1 : typeof v === 'string' ? '1' : true
+})
+const ifOutFalse = computed(() => {
+  const v = editForm.value?.ifOut
+  return typeof v === 'number' ? 0 : typeof v === 'string' ? '0' : false
+})
 
 // ===== 获取用户列表 =====
 async function getUserList() {

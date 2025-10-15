@@ -21,7 +21,7 @@ app.use(ElementPlus)
 const notifyStore = useNotifyStore()
 notifyStore.connect()
 // ✅ 默认主题
-document.documentElement.setAttribute('data-theme', 'dark')
+  document.documentElement.setAttribute('data-theme', 'dark')
 
 // ✅ 启动应用
 app.mount('#app')

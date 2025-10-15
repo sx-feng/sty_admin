@@ -219,12 +219,12 @@ onBeforeUnmount(() => {
 }
 
 .page-header {
-  position: sticky;   /* ⭐ 关键点 */
+  position: sticky;   /* �?关键�?*/
   top: -20px;             /* 距离顶部0 */
   z-index: 10;        /* 保证不被表格覆盖 */
-  background: #111;   /* 背景颜色与主题一致 */
+  background: var(--bg-panel);   /* 背景颜色与主题一�?*/
   padding-bottom: 10px;
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--border);
 }
 
 .actions {
@@ -238,3 +238,5 @@ onBeforeUnmount(() => {
   text-align: right;
 }
 </style>
+
+

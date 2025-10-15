@@ -16,6 +16,19 @@
     <!-- 产品列表 -->
     <el-table :data="tableData" border style="width: 100%" v-loading="loading">
       <el-table-column type="index" label="#" width="60" />
+      <el-table-column prop="incomeStatus" label="收益状态" width="120">
+        <template #default="{ row }">
+          <el-tag :type="(row.incomeStatus === 1 || row.incomeStatus === '1' || row.incomeStatus === '盈利') ? 'success' : 'info'">
+            {{
+              row.incomeStatus === 'PROFIT'
+                ? '盈利'
+                : (row.incomeStatus === 'LOSS'
+                    ? '亏损'
+                    : (row.incomeStatus ?? '—'))
+            }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column prop="userName" label="用户名" />
       <el-table-column prop="productName" label="产品名称" />
       <el-table-column prop="amount" label="金额 (USDT)" />
@@ -67,6 +80,12 @@
         <el-form-item label="周期值">
           <el-input-number v-model="editForm.cycleValue" :min="1" />
         </el-form-item>
+        <el-form-item label="收益状态">
+          <el-select v-model="editForm.incomeStatus" placeholder="选择收益状态">
+            <el-option label="亏损" :value="0" />
+            <el-option label="盈利" :value="1" />
+          </el-select>
+        </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editForm.status" placeholder="选择状态">
             <el-option label="进行中" :value="0" />
@@ -90,11 +109,13 @@ import { request } from '@/api/request'
 
 // 数据与状态
 const tableData = ref([])
-const total = ref(0)
 const pageSize = 10
 const currentPage = ref(1)
 const loading = ref(false)
 const filterType = ref('all') // 默认显示全部产品
+const total = ref(0)
+
+
 
 // 编辑弹窗
 const editDialogVisible = ref(false)
@@ -119,6 +140,7 @@ async function getProductList() {
 
   // 如果后端分页格式为 {records, total}
   tableData.value = res.data?.records || res.data || []
+  // eslint-disable-next-line no-undef
   total.value = res.data?.total || 0
 }
 
@@ -176,10 +198,11 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-  position: sticky;   /* ⭐ 关键点 */
+  position: sticky; 
   top: -20px;             /* 距离顶部0 */
   z-index: 10;        /* 保证不被表格覆盖 */
-  background: #111;   /* 背景颜色与主题一致 */
+  background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);   
 }
 .actions {
   display: flex;
@@ -191,3 +214,5 @@ onMounted(() => {
   text-align: right;
 }
 </style>
+
+

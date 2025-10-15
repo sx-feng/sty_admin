@@ -1,0 +1,13 @@
+*** Begin Patch
+*** Update File: src/views/products/ProductsPage.vue
+@@
+-import { ref, onMounted } from 'vue'
++import { ref, onMounted } from 'vue'
+@@
+ const tableData = ref([])
+ const pageSize = 10
+ const currentPage = ref(1)
+ const loading = ref(false)
+ const filterType = ref('all') // 默认显示全部产品
++const total = ref(0)
+*** End Patch

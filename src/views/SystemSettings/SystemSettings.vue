@@ -238,17 +238,17 @@ onMounted(() => {
 .system-settings-page {
   max-width: 900px;
   margin: 40px auto;
-  background: #1a1a1a;
+  background: var(--bg-panel);
   border-radius: 14px;
   padding: 30px;
-  color: #eaeaea;
-  border: 1px solid rgba(255, 215, 0, 0.15);
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+  color: var(--text-1);
+  border: 1px solid var(--border);
+  box-shadow: var(--glow);
 }
 
 h2 {
   text-align: center;
-  color: #f6c244;
+  color: var(--brand);
   font-weight: 600;
   margin-bottom: 30px;
   letter-spacing: 1px;
@@ -259,8 +259,8 @@ h2 {
 }
 
 .card-box {
-  background: rgba(30, 30, 30, 0.9);
-  border: 1px solid rgba(255, 215, 0, 0.2);
+  background: var(--bg-panel-2);
+  border: 1px solid var(--border);
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
   margin-bottom: 25px;
@@ -268,39 +268,39 @@ h2 {
 
 .el-card__header {
   background: linear-gradient(to right, rgba(255, 215, 0, 0.15), transparent);
-  color: #ffd34d;
+  color: var(--brand);
   font-weight: 600;
   letter-spacing: 1px;
   font-size: 15px;
 }
 
 .el-input__wrapper {
-  background: #222 !important;
-  border: 1px solid rgba(255, 215, 0, 0.25) !important;
-  color: #eee !important;
+  background: var(--bg-panel) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-1) !important;
 }
 
 .el-input-number__decrease,
 .el-input-number__increase {
-  background: #222 !important;
-  color: #ddd !important;
+  background: var(--bg-panel) !important;
+  color: var(--text-2) !important;
 }
 
 .el-input__inner,
 textarea {
-  color: #eee !important;
-  background: #222 !important;
+  color: var(--text-1) !important;
+  background: var(--bg-panel) !important;
 }
 
 .el-button--primary {
-  background: linear-gradient(90deg, #f6c244, #f3b93f);
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
   border: none;
   color: #222;
   font-weight: 600;
 }
 
 .el-button--primary:hover {
-  background: linear-gradient(90deg, #ffd34d, #f6c244);
+  background: linear-gradient(90deg, var(--brand), var(--brand-2));
 }
 
 .invite-list {
@@ -310,19 +310,19 @@ textarea {
 }
 
 .invite-item {
-  background: rgba(255, 215, 0, 0.15);
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  background: var(--brand-weak);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 6px 12px;
   font-weight: 600;
-  color: #ffd34d;
+  color: var(--brand);
   cursor: pointer;
   user-select: none;
   transition: all 0.2s;
 }
 
 .invite-item:hover {
-  background: rgba(255, 215, 0, 0.3);
+  background: var(--brand-weak);
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
 }
@@ -332,3 +332,6 @@ textarea {
   text-decoration: line-through;
 }
 </style>
+
+
+

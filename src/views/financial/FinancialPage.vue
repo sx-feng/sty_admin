@@ -243,4 +243,7 @@ onMounted(() => {
   margin-top: 20px;
   text-align: right;
 }
+.page-header{ background: var(--bg-panel) !important; border-bottom: 1px solid var(--border); }
 </style>
+
+

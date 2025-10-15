@@ -145,10 +145,11 @@ onMounted(() => {
   padding: 20px;
 }
 .page-header {
-    position: sticky;   /* ⭐ 关键点 */
+    position: sticky;  
   top: -30px;             /* 距离顶部0 */
   z-index: 10;        /* 保证不被表格覆盖 */
-  background: #111;   /* 背景颜色与主题一致 */
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);  
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -164,3 +165,5 @@ onMounted(() => {
   text-align: right;
 }
 </style>
+
+

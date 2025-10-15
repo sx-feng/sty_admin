@@ -100,10 +100,10 @@ nextTick(() => {
 }
 .status {
   font-size: 13px;
-  color: #ccc;
+  color: var(--text-2);
 }
 .status.online {
-  color: #67c23a;
+  color: var(--success);
 }
 .actions {
   display: flex;
@@ -112,23 +112,23 @@ nextTick(() => {
 }
 .log-container {
   flex: 1;
-  background: #111;
-  border: 1px solid #333;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
   border-radius: 6px;
   padding: 10px;
   overflow-y: auto;
-  color: #eee;
+  color: var(--text-1);
   font-size: 13px;
 }
 .log-item {
   padding: 6px 10px;
-  border-bottom: 1px solid #222;
+  border-bottom: 1px solid var(--border);
 }
-.log-item.recharge { color: #67c23a; }
+.log-item.recharge { color: var(--success); }
 .log-item.withdrawal { color: #e6a23c; }
-.log-item.purchase { color: #409eff; }
-.log-item.user_connected { color: #67c23a; } /* 🟢 用户上线绿色 */
-.log-item.user_disconnected { color: #f56c6c; } /* 🔴 用户下线红色 */
+.log-item.purchase { color: var(--info); }
+.log-item.user_connected { color: var(--success); } /* 🟢 用户上线绿色 */
+.log-item.user_disconnected { color: var(--danger); } /* 🔴 用户下线红色 */
 .log-time {
   opacity: 0.6;
   font-size: 12px;
@@ -145,25 +145,28 @@ nextTick(() => {
 :deep(.el-select),
 :deep(.el-select__wrapper),
 :deep(.el-input__inner) {
-  color: #fff !important;
-  background-color: #222 !important;
+  color: var(--text-1) !important;
+  background-color: var(--bg-panel) !important;
   border-color: #333 !important;
 }
 :deep(.el-select__placeholder) {
-  color: #aaa !important;
+  color: var(--text-2) !important;
 }
 :deep(.el-select-dropdown) {
-  background-color: #222 !important;
-  border: 1px solid #333 !important;
+  background-color: var(--bg-panel) !important;
+  border: 1px solid var(--border) !important;
 }
 :deep(.el-select-dropdown__item) {
-  color: #fff !important;
+  color: var(--text-1) !important;
 }
 :deep(.el-select-dropdown__item.is-hovering) {
-  background-color: #333 !important;
+  background-color: var(--bg-panel-2) !important;
 }
 :deep(.el-select-dropdown__item.is-selected) {
-  color: #ffd04b !important;
+  color: var(--brand) !important;
   font-weight: bold;
 }
 </style>
+
+
+
