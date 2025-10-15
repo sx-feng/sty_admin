@@ -19,7 +19,8 @@
       <el-table-column prop="bankName" label="银行名称" />
       <el-table-column prop="bankBranch" label="开户行" />
       <el-table-column prop="bankCard" label="银行卡号" />
-      <el-table-column prop="balance" label="余额" />
+      <el-table-column prop="ifOut" label="理财权限" />
+       <el-table-column prop="balance" label="余额" />
       <el-table-column prop="creditScore" label="信用分" />
 
       <!-- 冻结状态 -->
@@ -162,6 +163,7 @@ async function getUserList() {
   const res = await request(0, '/api/admin/user/list', { page: currentPage.value, size: pageSize })
   loading.value = false
   if (!res.ok) return ElMessage.error(res.message || '加载失败')
+  console.log(res.data)
   tableData.value = res.data?.records || res.data || []
   total.value = res.data?.total || 0
 }

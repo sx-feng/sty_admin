@@ -58,26 +58,76 @@
     </div>
 
     <!-- 编辑弹窗 -->
-    <el-dialog v-model="editDialogVisible" title="编辑理财记录" width="450px">
-      <el-form :model="editForm" label-width="90px">
-        <el-form-item label="用户名">
-          <el-input v-model="editForm.userName" disabled />
-        </el-form-item>
-        <el-form-item label="收益率 (%)">
-          <el-input-number v-model="editForm.rate" :min="0" :max="100" />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="editForm.status" placeholder="选择状态">
-            <el-option label="进行中" value="0" />
-            <el-option label="已结束" value="1" />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <el-button @click="editDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="saveFinancialInfo">保存</el-button>
-      </template>
-    </el-dialog>
+  <!-- 编辑弹窗 -->
+<el-dialog v-model="editDialogVisible" title="编辑理财记录" width="500px">
+  <el-form :model="editForm" label-width="100px" label-position="left">
+    <el-form-item label="用户名">
+      <el-input v-model="editForm.userName" placeholder="请输入用户名" />
+    </el-form-item>
+
+    <el-form-item label="投资金额 (USDT)">
+      <el-input-number
+        v-model="editForm.amount"
+        :min="0"
+        :step="0.01"
+        controls-position="right"
+        style="width: 100%"
+      />
+    </el-form-item>
+
+    <el-form-item label="收益 (USDT)">
+      <el-input-number
+        v-model="editForm.profit"
+        :min="0"
+        :step="0.01"
+        controls-position="right"
+        style="width: 100%"
+      />
+    </el-form-item>
+
+    <el-form-item label="收益率 (%)">
+      <el-input-number
+        v-model="editForm.interestRate"
+        :min="0"
+        :max="100"
+        :step="0.1"
+        controls-position="right"
+        style="width: 100%"
+      />
+    </el-form-item>
+
+    <el-form-item label="状态">
+      <el-select v-model="editForm.status" placeholder="选择状态" style="width: 100%">
+        <el-option label="进行中" :value="0" />
+        <el-option label="已结束" :value="1" />
+      </el-select>
+    </el-form-item>
+
+    <el-form-item label="开始时间">
+      <el-date-picker
+        v-model="editForm.createTime"
+        type="datetime"
+        placeholder="选择开始时间"
+        style="width: 100%"
+      />
+    </el-form-item>
+
+    <el-form-item label="更新时间">
+      <el-date-picker
+        v-model="editForm.updateTime"
+        type="datetime"
+        placeholder="选择更新时间"
+        style="width: 100%"
+      />
+    </el-form-item>
+  </el-form>
+
+  <template #footer>
+    <el-button @click="editDialogVisible = false">取消</el-button>
+    <el-button type="primary" @click="saveFinancialInfo">保存</el-button>
+  </template>
+</el-dialog>
+
   </div>
 </template>
 
@@ -125,7 +175,13 @@ function openEditDialog(row) {
 }
 
 async function saveFinancialInfo() {
-  const res = await request(1, '/api/admin/financial/update', editForm.value)
+  const payload = { ...editForm.value }
+  if (payload.createTime instanceof Date)
+    payload.createTime = payload.createTime.toISOString().slice(0, 19).replace('T', ' ')
+  if (payload.updateTime instanceof Date)
+    payload.updateTime = payload.updateTime.toISOString().slice(0, 19).replace('T', ' ')
+  
+  const res = await request(1, '/api/admin/financial/update', payload)
   if (res.ok) {
     ElMessage.success('修改成功')
     editDialogVisible.value = false
