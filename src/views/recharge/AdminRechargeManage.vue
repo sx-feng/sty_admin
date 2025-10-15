@@ -145,6 +145,10 @@ onMounted(() => {
   padding: 20px;
 }
 .page-header {
+    position: sticky;   /* ⭐ 关键点 */
+  top: -30px;             /* 距离顶部0 */
+  z-index: 10;        /* 保证不被表格覆盖 */
+  background: #111;   /* 背景颜色与主题一致 */
   display: flex;
   justify-content: space-between;
   align-items: center;

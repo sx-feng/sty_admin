@@ -173,6 +173,10 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
+  position: sticky;   /* ⭐ 关键点 */
+  top: -20px;             /* 距离顶部0 */
+  z-index: 10;        /* 保证不被表格覆盖 */
+  background: #111;   /* 背景颜色与主题一致 */
 }
 .actions {
   display: flex;
