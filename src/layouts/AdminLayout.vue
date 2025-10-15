@@ -10,6 +10,7 @@
         <router-link to="/users" class="nav-item" active-class="active">👥 用户管理</router-link>
         <router-link to="/financial" class="nav-item" active-class="active">💰 理财管理</router-link>
         <router-link to="/withdrawal" class="nav-item" active-class="active">💸 提现管理</router-link>
+        <router-link to="/recharge" class="nav-item" active-class="active">💳 充值管理</router-link>
         <router-link to="/products" class="nav-item" active-class="active">🛒 产品管理</router-link>
         <router-link to="/InterestControl" class="nav-item" active-class="active">📈 利率控制</router-link>
          <router-link to="/notify" class="nav-item" active-class="active">🔔 通知中心</router-link>

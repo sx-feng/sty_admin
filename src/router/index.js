@@ -17,8 +17,8 @@ const routes = [
        { path: 'notify', component: () => import('@/views/notify/NotifyCenter.vue') },
      { path: 'products', component: () => import('@/views/products/ProductsPage.vue') },
       { path: 'InterestControl', component: () => import('@/views/InterestControl/InterestControl.vue') },
-          
-             { path: 'SystemSettings', component: () => import('@/views/SystemSettings/SystemSettings.vue') }
+             { path: 'SystemSettings', component: () => import('@/views/SystemSettings/SystemSettings.vue') },
+             { path: 'recharge', component: () => import('@/views/recharge/AdminRechargeManage.vue') },
 
 
     ]
