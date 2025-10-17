@@ -48,6 +48,8 @@ import { ref, computed, onMounted, onBeforeUnmount,getCurrentInstance } from 'vu
 import { ElMessage } from 'element-plus'
 const { appContext } = getCurrentInstance()
 const wsUrl = appContext.config.globalProperties.$config.wsUrl
+
+
 /**
  * 可调参数
  * - wsUrl：后端 WebSocket 地址
@@ -86,7 +88,63 @@ const filteredLogs = computed(() =>
 let ws = null
 let reconnectTimer = null
 const audioRef = ref(null)
+// WebAudio：按类型播放不同提示音（无需外部 mp3）
+let audioCtx = null
+let audioUnlocked = false
 
+// eslint-disable-next-line no-unused-vars
+function initAudio() {
+  if (!audioCtx) {
+    const Ctx = window.AudioContext || window.webkitAudioContext
+    if (!Ctx) return
+    audioCtx = new Ctx()
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
+  audioUnlocked = true
+}
+
+// 生成一次“哔”的纯音
+function beep(freq = 880, duration = 180) {
+  if (!audioCtx) return
+  const osc = audioCtx.createOscillator()
+  const gain = audioCtx.createGain()
+  osc.type = 'sine'
+  osc.frequency.value = freq
+  // 快速起音、快速衰减，避免爆音
+  gain.gain.setValueAtTime(0.0001, audioCtx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.22, audioCtx.currentTime + 0.012)
+  gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000)
+  osc.connect(gain).connect(audioCtx.destination)
+  osc.start()
+  osc.stop(audioCtx.currentTime + duration / 1000 + 0.02)
+}
+
+// 按事件类型播放不同音色/节奏
+// eslint-disable-next-line no-unused-vars
+function playBeepFor(type) {
+  if (!props.beep) return
+  // 若未解锁，尝试用 <audio> 退而求其次（可能仍受策略限制）
+  if (!audioUnlocked) {
+    if (audioRef.value && audioRef.value.play) {
+      try { audioRef.value.currentTime = 0; audioRef.value.play() } catch {""}
+    }
+    return
+  }
+  switch (type) {
+    case 'USER_RECHARGE':     // 充值：高音短提示
+      beep(1200, 180)
+      break
+    case 'USER_WITHDRAWAL':   // 提现：低音稍长
+      beep(520, 220)
+      break
+    case 'USER_PURCHASE':     // 下单：双击提示
+      beep(900, 120)
+      setTimeout(() => beep(900, 120), 160)
+      break
+    default:                  // 其他：中音
+      beep(800, 160)
+  }
+}
 // 简单的提示音（内置 base64 一小段哔声），也可以换成你 public 目录下的 mp3
 const beepSrc =
   'data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...' // 省略：可用你自己的 mp3 链接
@@ -145,14 +203,7 @@ function connect() {
   logs.value.unshift(item)
 
   // ✅ 播放提示音
-  if (props.beep && audioRef.value) {
-    try {
-      audioRef.value.currentTime = 0
-      audioRef.value.play()
-    } catch (err) {
-      console.warn('[Notify] 音频播放失败', err)
-    }
-  }
+playBeepFor(type)
 }
 
 
@@ -219,10 +270,13 @@ function formatTime(ts) {
 
 onMounted(() => {
   if (props.autoConnect) connect()
+  window.addEventListener('click', initAudio, { once: true })
 })
 
 onBeforeUnmount(() => {
   disconnect()
+  window.removeEventListener('click', initAudio)
+
 })
 </script>
 
