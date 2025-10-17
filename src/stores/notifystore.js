@@ -1,5 +1,7 @@
 // src/stores/notifyStore.js
-import { ref,watch } from 'vue'
+import { ref, watch } from 'vue'
+import { speakNotificationByType } from '@/utils/notifyAudio'
+import { formatNotifyMessage } from '@/constants/notifyTypes'
 
 const connected = ref(false)
 const logs = ref([])
@@ -22,31 +24,21 @@ function connect() {
       try {
         const msg = JSON.parse(event.data)
         const time = new Date().toLocaleString()
+        const eventType = msg.event || msg.type || 'UNKNOWN'
 
         // ✅ 根据 event 自动生成文字内容
-        let content = ''
-        switch (msg.event) {
-          case 'USER_CONNECTED':
-            content = `用户 ${msg.user || msg.userId} 已连接`
-            break
-          case 'USER_DISCONNECTED':
-            content = `用户 ${msg.user || msg.userId} 已断开连接`
-            break
-          case 'FINANCIAL_TRANSFER_IN':
-            content = `用户 ${msg.user || msg.userId} 发起理财转入`
-            break
-          case 'FINANCIAL_TRANSFER_OUT':
-            content = `用户 ${msg.user || msg.userId} 发起理财转出`
-            break
-          case 'CONTACT_SUPPORT':
-            content = `用户 ${msg.user || msg.userId} 请求人工客服支持`
-            break
-          default:
-            content = msg.data || '未知事件'
-        }
+        const fallback =
+          typeof msg.data === 'string'
+            ? msg.data
+            : typeof msg.message === 'string'
+              ? msg.message
+              : '未知事件'
+        const content = formatNotifyMessage(eventType, msg, fallback)
+
+        speakNotificationByType(eventType, content)
 
         logs.value.unshift({
-          type: msg.event,
+          type: eventType,
           user: msg.user,
           time,
           content,

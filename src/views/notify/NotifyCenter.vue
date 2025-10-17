@@ -17,11 +17,12 @@
           :teleported="false"
         >
           <el-option label="全部" value="" />
-          <el-option label="充值" value="USER_RECHARGE" />
-          <el-option label="提现" value="USER_WITHDRAWAL" />
-          <el-option label="下单" value="USER_PURCHASE" />
-          <el-option label="用户上线" value="USER_CONNECTED" />
-          <el-option label="用户下线" value="USER_DISCONNECTED" />
+          <el-option
+            v-for="item in notifyTypeDefs"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
         <el-button size="small" @click="clearLogs">清空日志</el-button>
       </div>
@@ -46,6 +47,7 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue'
 import { useNotifyStore } from '@/stores/notifystore'
+import { notifyTypeDefs, getNotifyLabel } from '@/constants/notifyTypes'
 
 const { logs, connected, clearLogs } = useNotifyStore()
 
@@ -61,17 +63,7 @@ const filteredLogs = computed(() => {
 
 // === 事件名映射 ===
 function eventName(type) {
-  switch (type) {
-    case 'USER_RECHARGE': return '充值事件'
-    case 'USER_WITHDRAWAL': return '提现事件'
-    case 'USER_PURCHASE': return '下单事件'
-    case 'USER_CONNECTED': return '用户上线'
-    case 'USER_DISCONNECTED': return '用户下线'
-    case 'FINANCIAL_TRANSFER_IN': return '理财转入'
-    case 'FINANCIAL_TRANSFER_OUT': return '理财转出'
-    case 'CONTACT_SUPPORT': return '客服请求'
-    default: return '未知事件'
-  }
+  return getNotifyLabel(type || '')
 }
 
 // === 自动滚动到顶部 ===
@@ -167,6 +159,4 @@ nextTick(() => {
   font-weight: bold;
 }
 </style>
-
-
 

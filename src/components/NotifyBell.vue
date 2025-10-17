@@ -9,11 +9,14 @@
     <!-- 抽屉显示通知列表 -->
     <el-drawer v-model="drawerOpen" title="通知中心" size="380px" append-to-body>
       <div class="toolbar">
-        <el-select v-model="typeFilter" placeholder="筛选事件" size="small" style="width: 140px">
+        <el-select v-model="typeFilter" placeholder="筛选事件" size="small" style="width: 160px">
           <el-option label="全部" value=""></el-option>
-          <el-option label="充值" value="USER_RECHARGE"></el-option>
-          <el-option label="提现" value="USER_WITHDRAWAL"></el-option>
-          <el-option label="下单" value="USER_PURCHASE"></el-option>
+          <el-option
+            v-for="item in notifyTypeDefs"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          ></el-option>
         </el-select>
         <el-button size="small" @click="markAllRead">标记已读</el-button>
         <el-button size="small" @click="clearAll" type="danger" plain>清空</el-button>
@@ -44,8 +47,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount,getCurrentInstance } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
 import { ElMessage } from 'element-plus'
+import { speakNotificationByType } from '@/utils/notifyAudio'
+import { notifyTypeDefs, getNotifyShortLabel, formatNotifyMessage, getNotifyAudio } from '@/constants/notifyTypes'
 const { appContext } = getCurrentInstance()
 const wsUrl = appContext.config.globalProperties.$config.wsUrl
 
@@ -88,6 +93,7 @@ const filteredLogs = computed(() =>
 let ws = null
 let reconnectTimer = null
 const audioRef = ref(null)
+const audioCache = new Map()
 // WebAudio：按类型播放不同提示音（无需外部 mp3）
 let audioCtx = null
 let audioUnlocked = false
@@ -101,6 +107,48 @@ function initAudio() {
   }
   if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
   audioUnlocked = true
+  if (typeof Audio !== 'undefined') {
+    notifyTypeDefs.forEach(item => {
+      if (!item.audio || audioCache.has(item.audio)) return
+      try {
+        const audioElement = new Audio(item.audio)
+        audioElement.preload = 'auto'
+        audioElement.load()
+        audioCache.set(item.audio, audioElement)
+      } catch {
+        // ignore: preload failures commonly thrown before user interaction
+      }
+    })
+  }
+}
+
+function getCachedAudio(url) {
+  if (!url) return null
+  if (audioCache.has(url)) return audioCache.get(url)
+  if (typeof Audio === 'undefined') return null
+  try {
+    const audioElement = new Audio(url)
+    audioElement.preload = 'auto'
+    audioCache.set(url, audioElement)
+    return audioElement
+  } catch {
+    return null
+  }
+}
+
+function playAudioClip(url) {
+  const el = getCachedAudio(url)
+  if (!el) return false
+  try {
+    el.currentTime = 0
+    const playPromise = el.play()
+    if (playPromise && typeof playPromise.then === 'function') {
+      playPromise.catch(() => {})
+    }
+    return true
+  } catch {
+    return false
+  }
 }
 
 // 生成一次“哔”的纯音
@@ -123,6 +171,8 @@ function beep(freq = 880, duration = 180) {
 // eslint-disable-next-line no-unused-vars
 function playBeepFor(type) {
   if (!props.beep) return
+  const audioUrl = getNotifyAudio(type)
+  if (audioUrl && playAudioClip(audioUrl)) return
   // 若未解锁，尝试用 <audio> 退而求其次（可能仍受策略限制）
   if (!audioUnlocked) {
     if (audioRef.value && audioRef.value.play) {
@@ -163,48 +213,34 @@ function connect() {
     ElMessage.success('通知服务已连接')
   }
 
- ws.onmessage = (evt) => {
-  let payload = null
-  try {
-    payload = JSON.parse(evt.data)
-  } catch {
-    // 兼容纯字符串
-    payload = { event: 'USER_PURCHASE', message: String(evt.data || '新消息') }
-  }
-
-  // ✅ 自动识别 event 类型
-  const type = payload.event || payload.type || 'USER_PURCHASE'
-
-  // ✅ 动态生成可读消息内容
-  let message = payload.message
-  if (!message) {
-    switch (type) {
-      case 'USER_PURCHASE':
-        message = `${payload.user || '未知用户'} 购买了 ${payload.productName || '未知产品'}（金额：${payload.amount || 0} USDT）`
-        break
-      case 'USER_WITHDRAWAL':
-        message = `${payload.user || '未知用户'} 提现 ${payload.amount || 0} USDT`
-        break
-      case 'USER_RECHARGE':
-        message = `${payload.user || '未知用户'} 充值 ${payload.amount || 0} USDT`
-        break
-      default:
-        message = JSON.stringify(payload)
+  ws.onmessage = (evt) => {
+    let payload = null
+    try {
+      payload = JSON.parse(evt.data)
+    } catch {
+      // 兼容纯字符串
+      payload = { event: 'USER_PURCHASE', message: String(evt.data || '新消息') }
     }
+
+    // ✅ 自动识别 event 类型
+    const type = payload.event || payload.type || 'USER_PURCHASE'
+
+    // ✅ 动态生成可读消息内容
+    const message = formatNotifyMessage(type, payload, payload.message)
+
+    const item = {
+      type,
+      message,
+      ts: Date.now(),
+      read: false,
+    }
+
+    logs.value.unshift(item)
+
+    // ✅ 播放提示音
+    playBeepFor(type)
+    speakNotificationByType(type, item.message)
   }
-
-  const item = {
-    type,
-    message,
-    ts: Date.now(),
-    read: false,
-  }
-
-  logs.value.unshift(item)
-
-  // ✅ 播放提示音
-playBeepFor(type)
-}
 
 
   ws.onerror = () => {
@@ -248,12 +284,7 @@ function clearAll() {
 }
 
 function typeText(t) {
-  switch (t) {
-    case 'USER_RECHARGE': return '充值'
-    case 'USER_WITHDRAWAL': return '提现'
-    case 'USER_PURCHASE': return '下单'
-    default: return t || '事件'
-  }
+  return getNotifyShortLabel(t || '')
 }
 
 function pad(n) { return String(n).padStart(2, '0') }

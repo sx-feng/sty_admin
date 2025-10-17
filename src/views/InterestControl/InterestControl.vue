@@ -19,7 +19,7 @@
       <el-table :data="dataList" style="width: 100%" border>
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="interestRateName" label="利率名称" />
-        <el-table-column prop="interestRateValue" label="利率值 (%)" />
+        <el-table-column prop="interestRateValue" label="利率值(小数点)" />
         <el-table-column prop="isOpen" label="是否启用">
           <template #default="{ row }">
             <el-tag :type="row.isOpen ? 'success' : 'info'">

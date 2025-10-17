@@ -46,14 +46,14 @@
 
           <el-form label-width="160px">
             <el-form-item label="系统年化利率(%)">
-              <el-input-number v-model="form.interest_rate" :step="0.1" />
+              <el-input-number v-model="form" :step="1" />
             </el-form-item>
-            <el-form-item label="手续费率(%)">
+            <!-- <el-form-item label="手续费率(%)">
               <el-input-number v-model="form.fee_rate" :step="0.1" />
             </el-form-item>
             <el-form-item label="最低提现额度">
               <el-input-number v-model="form.withdraw_min" :step="1" />
-            </el-form-item>
+            </el-form-item> -->
 
             <el-form-item>
               <el-button type="primary" @click="saveFinancial" :loading="savingFinancial">保存配置</el-button>
@@ -161,18 +161,19 @@ async function loadInviteList() {
 
 
 // --- 金融配置 ---
-const form = ref({
-  interest_rate: 12.0,
-  fee_rate: 0.5,
-  withdraw_min: 10
-})
+const form = ref(0)
 const savingFinancial = ref(false)
 
 async function loadFinancial() {
   try {
     const res = await getFinancialRate()
     if (res.code === 200) {
-      form.value.interest_rate = parseFloat(res.data.rate || 0)
+      let source = res.data
+      if (source && typeof source === 'object') {
+        source = source.rate ?? source.value ?? source.data ?? 0
+      }
+      const raw = parseFloat(source ?? 0)
+      form.value = Number.isFinite(raw) ? raw * 100 : 0
       ElMessage.success('加载金融成功')
     }
   } catch {
@@ -183,7 +184,9 @@ async function loadFinancial() {
 async function saveFinancial() {
   savingFinancial.value = true
   try {
-    const res = await updateFinancialRate(form.value.interest_rate)
+    const current = Number(form.value)
+    const payload = Number.isFinite(current) ? current / 100 : 0
+    const res = await updateFinancialRate(payload)
     if (res.code === 200) {
       ElMessage.success('金融配置已更新')
       setTimeout(() => {
@@ -332,6 +335,3 @@ textarea {
   text-decoration: line-through;
 }
 </style>
-
-
-
