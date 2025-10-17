@@ -232,7 +232,6 @@ async function saveAnnouncement() {
 onMounted(() => {
   loadFinancial()
   loadAnnouncement()
- saveFinancial() 
  loadInviteList()
 })
 </script>
