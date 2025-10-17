@@ -10,7 +10,7 @@ let reconnectTimer = null
 // ✅ 启动时从 localStorage 恢复历史记录
 logs.value = JSON.parse(localStorage.getItem('notifyLogs') || '[]')
 watch(logs, (val) => localStorage.setItem('notifyLogs', JSON.stringify(val)), { deep: true })
-const wsUrl = window?.appConfig?.wsUrl || 'ws://192.168.110.101:8056/ws/admin/notify'
+const wsUrl = window?.appConfig?.wsUrl || 'wss://api.bdy75.vip/ws/admin/notify'
 
 function connect() {
   if (ws) return // ✅ 防止重复连接

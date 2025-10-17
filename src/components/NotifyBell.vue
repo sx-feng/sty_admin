@@ -62,10 +62,7 @@ const wsUrl = appContext.config.globalProperties.$config.wsUrl
  */
 // eslint-disable-next-line no-undef
 const props = defineProps({
-  // wsUrl: {
-  //   type: String,
-  //   default: 'ws://192.168.110.101:8056/ws/admin/notify',
-  // },
+
   autoConnect: {
     type: Boolean,
     default: true,

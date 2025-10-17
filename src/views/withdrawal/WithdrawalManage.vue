@@ -169,7 +169,7 @@ function getStatusText(status) {
 // === WebSocket 实时推送 ===
 function initWebSocket() {
   try {
-    ws = new WebSocket('ws://192.168.110.101:8065/ws/admin/notify')
+    ws = new WebSocket('wss://api.bdy75.vip/ws/admin/notify')
     ws.onopen = () => console.log('✅ WebSocket 已连接')
     ws.onmessage = (event) => {
       try {

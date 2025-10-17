@@ -9,7 +9,8 @@ import '@/styles/element-override.css'
 import { useNotifyStore } from '@/stores/notifystore'
 // ✅ 定义全局配置对象
 const globalConfig = {
-  wsUrl: 'ws://192.168.110.101:8056/ws/admin/notify', // 你的全局 WebSocket 地址
+  //wsUrl: 'ws://192.168.110.101:8056/ws/admin/notify', // 你的全局 WebSocket 地址
+    wsUrl: 'wss://api.bdy75.vip/ws/admin/notify', // 你的全局 WebSocket 地址
 }
 const app = createApp(App)
 // ✅ 注入全局配置
