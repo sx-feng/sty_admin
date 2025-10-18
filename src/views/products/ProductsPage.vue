@@ -81,11 +81,11 @@
           <el-input-number v-model="editForm.cycleValue" :min="1" />
         </el-form-item>
         <el-form-item label="收益状态">
-          <el-select v-model="editForm.incomeStatus" placeholder="选择收益状态">
-            <el-option label="亏损" :value="0" />
-            <el-option label="盈利" :value="1" />
-          </el-select>
-        </el-form-item>
+  <el-select v-model="editForm.incomeStatus" placeholder="选择收益状态">
+    <el-option label="亏损" value="LOSS" />
+    <el-option label="盈利" value="PROFIT" />
+  </el-select>
+</el-form-item>
         <el-form-item label="状态">
           <el-select v-model="editForm.status" placeholder="选择状态">
             <el-option label="进行中" :value="0" />
