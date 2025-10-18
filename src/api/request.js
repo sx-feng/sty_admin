@@ -1,7 +1,7 @@
 // request.js
 // const baseURL = 'http://103.236.74.15:8088/';
-// const baseURL = 'http://192.168.110.101:8056';
- const baseURL = 'https://api.bdy75.vip';
+const baseURL = 'http://192.168.110.101:8056';
+//  const baseURL = 'https://api.bdy75.vip';
 /**
  * 通用请求方法（强化版）
  * - 自动防止 JSON 解析错误

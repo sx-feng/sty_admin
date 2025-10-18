@@ -193,12 +193,12 @@ async function saveFinancialInfo() {
 
 // === 删除 ===
 function deleteRecord(row) {
-  ElMessageBox.confirm(`确定删除【${row.user}】的理财记录吗？`, '警告', {
+  ElMessageBox.confirm(`确定删除【${row.userName}】的理财记录吗？`, '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
-    const res = await request(1, '/api/admin/financial/delete', { id: row.id })
+    const res = await request(1, '/api/admin/financial/delete', { id: row.id },true)
     if (res.ok) {
       ElMessage.success('删除成功')
       getFinancialList()

@@ -168,7 +168,7 @@ function deleteProduct(row) {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(async () => {
-    const res = await request(1, '/api/admin/product/delete', { id: row.id })
+    const res = await request(1, '/api/admin/product/delete', { id: row.id },true)
     if (res.ok) {
       ElMessage.success('删除成功')
       getProductList()
